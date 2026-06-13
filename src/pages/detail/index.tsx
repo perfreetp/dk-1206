@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, Button, Textarea } from '@tarojs/components';
 import Taro from '@tarojs/taro';
-import { getTrendDetail } from '@/data/mockData';
+import { getTrendDetail, mockTrends } from '@/data/mockData';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useAlerts } from '@/hooks/useAlerts';
 import HeatChart from '@/components/HeatChart';
 import styles from './index.module.scss';
 
+const BLOCKED_KEY = 'blocked_trends';
+
 const DetailPage: React.FC = () => {
   const [detail, setDetail] = useState<ReturnType<typeof getTrendDetail>>();
   const [notes, setNotes] = useState('');
+  const [showShare, setShowShare] = useState(false);
   const { addFavorite, isFavorite, removeFavorite } = useFavorites();
   const { addAlert } = useAlerts();
 
@@ -56,11 +59,28 @@ const DetailPage: React.FC = () => {
   };
 
   const handleShare = () => {
-    Taro.showToast({ title: '分享功能开发中', icon: 'none' });
+    setShowShare(true);
   };
 
   const handleBlock = () => {
-    Taro.showToast({ title: '已屏蔽该话题', icon: 'success' });
+    if (!detail) return;
+    
+    const saved = localStorage.getItem(BLOCKED_KEY);
+    const blockedIds = saved ? JSON.parse(saved) : [];
+    if (!blockedIds.includes(detail.id)) {
+      blockedIds.push(detail.id);
+      localStorage.setItem(BLOCKED_KEY, JSON.stringify(blockedIds));
+    }
+    
+    Taro.showToast({ 
+      title: '已屏蔽该话题', 
+      icon: 'success',
+      duration: 1500 
+    });
+    
+    setTimeout(() => {
+      Taro.navigateBack();
+    }, 1500);
   };
 
   const handleSaveNotes = () => {
@@ -196,6 +216,49 @@ const DetailPage: React.FC = () => {
           <Text className={styles.actionBtnText}>📤 分享</Text>
         </Button>
       </View>
+
+      {showShare && (
+        <View className={styles.modal} onClick={() => setShowShare(false)}>
+          <View className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <View className={styles.modalHeader}>
+              <Text className={styles.modalTitle}>📤 分享话题</Text>
+            </View>
+            
+            <View className={styles.sharePreview}>
+              <Image className={styles.shareCover} src={detail.coverUrl} mode="aspectFill" />
+              <Text className={styles.shareTitle}>{detail.title}</Text>
+              <View className={styles.shareTags}>
+                {detail.tags.map((tag, index) => (
+                  <Text key={index} className={styles.shareTag}>{tag}</Text>
+                ))}
+              </View>
+              <Text className={styles.shareHeat}>热度 {formatHeat(detail.heat)}</Text>
+            </View>
+
+            <View className={styles.shareButtons}>
+              <Button className={styles.shareBtn} onClick={() => {
+                Taro.showToast({ title: '已复制链接', icon: 'success' });
+                setShowShare(false);
+              }}>
+                <Text>📋 复制链接</Text>
+              </Button>
+              <Button className={styles.shareBtn} onClick={() => {
+                Taro.showToast({ title: '生成图片中...', icon: 'loading' });
+                setTimeout(() => {
+                  Taro.showToast({ title: '图片已保存', icon: 'success' });
+                  setShowShare(false);
+                }, 1500);
+              }}>
+                <Text>🖼️ 保存图片</Text>
+              </Button>
+            </View>
+
+            <Button className={styles.modalCloseBtn} onClick={() => setShowShare(false)}>
+              <Text>关闭</Text>
+            </Button>
+          </View>
+        </View>
+      )}
     </ScrollView>
   );
 };

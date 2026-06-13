@@ -90,3 +90,225 @@
   font-size: $font-size-md;
   color: $color-text-tertiary;
 }
+
+.blockBtnWrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: $spacing-md;
+}
+
+.blockBtn {
+  padding: $spacing-xs $spacing-md;
+  background: rgba($color-error, 0.1);
+  border-radius: $radius-button;
+}
+
+.blockBtnText {
+  font-size: $font-size-xs;
+  color: $color-error;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  width: 650rpx;
+  max-height: 80vh;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  text-align: center;
+  margin-bottom: $spacing-xl;
+}
+
+.modalTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.modalDate {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+  display: block;
+}
+
+.reportSection {
+  margin-bottom: $spacing-lg;
+}
+
+.reportSectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  display: block;
+}
+
+.reportList {
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+}
+
+.reportItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-sm 0;
+  border-bottom: 1rpx solid $color-divider;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.reportRank {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-bg-card;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  margin-right: $spacing-md;
+  
+  &.topRank {
+    background: $color-primary;
+    color: $color-text-white;
+  }
+}
+
+.reportTitle {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.reportHeat {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.reportRising {
+  font-size: $font-size-sm;
+  color: $color-trending-up;
+  font-weight: $font-weight-medium;
+}
+
+.reportSummary {
+  background: linear-gradient(135deg, rgba($color-primary, 0.1) 0%, rgba($color-primary-light, 0.1) 100%);
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-xl;
+}
+
+.reportSummaryText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}
+
+.modalCloseBtn {
+  width: 100%;
+  height: $button-height-md;
+  background: $color-primary;
+  border-radius: $radius-button;
+  color: $color-text-white;
+  font-size: $font-size-md;
+}
+
+.sharePreview {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+}
+
+.shareTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  display: block;
+}
+
+.shareSubtitle {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: $spacing-xs;
+  display: block;
+}
+
+.shareList {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: $radius-sm;
+  padding: $spacing-md;
+  margin-top: $spacing-md;
+}
+
+.shareItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-sm 0;
+  
+  &:not(:last-child) {
+    border-bottom: 1rpx solid rgba(255, 255, 255, 0.2);
+  }
+}
+
+.shareRank {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+  color: $color-text-white;
+  margin-right: $spacing-md;
+}
+
+.shareItemTitle {
+  font-size: $font-size-md;
+  color: $color-text-white;
+}
+
+.shareFooter {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  margin-top: $spacing-md;
+  display: block;
+}
+
+.shareButtons {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+}
+
+.shareBtn {
+  flex: 1;
+  height: $button-height-md;
+  background: $color-bg-page;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+}

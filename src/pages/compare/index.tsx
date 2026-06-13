@@ -12,7 +12,7 @@ const ComparePage: React.FC = () => {
   const categories: CategoryType[] = ['all', 'movie', 'drama', 'variety', 'artist', 'game'];
 
   const filteredItems = useMemo(() => {
-    return mockTrends.filter(item => category === 'all' || item.category === item.category);
+    return mockTrends.filter(item => category === 'all' || item.category === category);
   }, [category]);
 
   const selectedItems = useMemo(() => {
