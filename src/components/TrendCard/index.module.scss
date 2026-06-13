@@ -1,0 +1,140 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  display: flex;
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.rankWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80rpx;
+  margin-right: $spacing-md;
+}
+
+.rank {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-tertiary;
+  
+  &.topRank {
+    color: $color-primary;
+  }
+}
+
+.trendIconUp,
+.trendIconDown {
+  margin-top: $spacing-xs;
+}
+
+.trendText {
+  font-size: $font-size-xs;
+}
+
+.trendIconUp .trendText {
+  color: $color-trending-up;
+}
+
+.trendIconDown .trendText {
+  color: $color-trending-down;
+}
+
+.cover {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: $radius-md;
+  flex-shrink: 0;
+}
+
+.content {
+  flex: 1;
+  margin-left: $spacing-md;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+  @include text-ellipsis;
+}
+
+.tags {
+  display: flex;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-sm;
+}
+
+.tag {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  background: rgba($color-primary, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xs;
+}
+
+.heat {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-xs;
+}
+
+.heatLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.heatValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.change {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  
+  &.up {
+    color: $color-trending-up;
+  }
+  
+  &.down {
+    color: $color-trending-down;
+  }
+}
+
+.discussions {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-xs;
+}
+
+.reason {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.reasonIcon {
+  font-size: $font-size-sm;
+}
+
+.reasonText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  @include text-ellipsis;
+}
