@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
-import { mockTrends } from '@/data/mockData';
+import { mockTrends, getTrendDetail } from '@/data/mockData';
 import { CategoryType, categoryMap } from '@/types';
 import HeatChart from '@/components/HeatChart';
 import { useBlocked } from '@/hooks/useBlocked';
@@ -25,6 +25,15 @@ const ComparePage: React.FC = () => {
     return mockTrends.filter(item => selectedIds.includes(item.id));
   }, [selectedIds]);
 
+  const chartData = useMemo(() => {
+    return selectedItems.map(item => {
+      const detail = getTrendDetail(item.id);
+      return detail?.heatHistory || [];
+    });
+  }, [selectedItems]);
+
+  const chartLabels = selectedItems.map(item => item.title);
+
   const toggleSelect = (id: string) => {
     if (selectedIds.includes(id)) {
       setSelectedIds(selectedIds.filter(i => i !== id));
@@ -38,10 +47,6 @@ const ComparePage: React.FC = () => {
       return (num / 10000).toFixed(1) + '万';
     }
     return num.toString();
-  };
-
-  const getMaxHeat = () => {
-    return Math.max(...selectedItems.map(item => item.heat), 1);
   };
 
   return (
@@ -93,41 +98,47 @@ const ComparePage: React.FC = () => {
             <Text className={styles.compareTitle}>数据对比</Text>
             <View className={styles.compareItem}>
               <Text className={styles.compareLabel}>热度值</Text>
-              <View style={{ display: 'flex', gap: 32 }}>
+              <View className={styles.compareValues}>
                 {selectedItems.map(item => (
-                  <Text key={item.id} className={styles.compareValue}>
-                    {formatHeat(item.heat)}
-                  </Text>
+                  <View key={item.id} className={styles.compareValueWrap}>
+                    <Text className={styles.compareValue}>{formatHeat(item.heat)}</Text>
+                    <Text className={styles.compareValueLabel}>{item.title}</Text>
+                  </View>
                 ))}
               </View>
             </View>
             <View className={styles.compareItem}>
               <Text className={styles.compareLabel}>热度变化</Text>
-              <View style={{ display: 'flex', gap: 32 }}>
+              <View className={styles.compareValues}>
                 {selectedItems.map(item => (
-                  <Text key={item.id} className={`${styles.compareValue} ${item.trend === 'up' ? 'color-trending-up' : item.trend === 'down' ? 'color-trending-down' : ''}`}>
-                    {item.trend === 'up' ? '+' : ''}{item.heatChangePercent.toFixed(1)}%
-                  </Text>
+                  <View key={item.id} className={styles.compareValueWrap}>
+                    <Text className={`${styles.compareValue} ${item.trend === 'up' ? 'color-trending-up' : item.trend === 'down' ? 'color-trending-down' : ''}`}>
+                      {item.trend === 'up' ? '+' : ''}{item.heatChangePercent.toFixed(1)}%
+                    </Text>
+                    <Text className={styles.compareValueLabel}>{item.title}</Text>
+                  </View>
                 ))}
               </View>
             </View>
             <View className={styles.compareItem}>
               <Text className={styles.compareLabel}>讨论量</Text>
-              <View style={{ display: 'flex', gap: 32 }}>
+              <View className={styles.compareValues}>
                 {selectedItems.map(item => (
-                  <Text key={item.id} className={styles.compareValue}>
-                    {formatHeat(item.discussions)}
-                  </Text>
+                  <View key={item.id} className={styles.compareValueWrap}>
+                    <Text className={styles.compareValue}>{formatHeat(item.discussions)}</Text>
+                    <Text className={styles.compareValueLabel}>{item.title}</Text>
+                  </View>
                 ))}
               </View>
             </View>
             <View className={styles.compareItem}>
               <Text className={styles.compareLabel}>排名</Text>
-              <View style={{ display: 'flex', gap: 32 }}>
+              <View className={styles.compareValues}>
                 {selectedItems.map(item => (
-                  <Text key={item.id} className={styles.compareValue}>
-                    第{item.rank}名
-                  </Text>
+                  <View key={item.id} className={styles.compareValueWrap}>
+                    <Text className={styles.compareValue}>第{item.rank}名</Text>
+                    <Text className={styles.compareValueLabel}>{item.title}</Text>
+                  </View>
                 ))}
               </View>
             </View>
@@ -135,8 +146,8 @@ const ComparePage: React.FC = () => {
 
           <View className={styles.compareChart}>
             <Text className={styles.compareTitle}>热度趋势对比</Text>
-            {selectedItems[0] && (
-              <HeatChart data={[{ time: '00:00', value: selectedItems[0].heat }, { time: '12:00', value: selectedItems[0].heat * 1.1 }, { time: '24:00', value: selectedItems[0].heat }]} />
+            {chartData.length > 0 && chartData[0].length > 0 && (
+              <HeatChart data={chartData} labels={chartLabels} />
             )}
           </View>
         </>

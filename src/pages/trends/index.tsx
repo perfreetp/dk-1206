@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { View, Text, ScrollView, Button } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { mockTrends } from '@/data/mockData';
@@ -16,6 +16,7 @@ const TrendsPage: React.FC = () => {
   const [showReport, setShowReport] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const { blockedIds, addBlocked } = useBlocked();
+  const shareRef = useRef<HTMLDivElement>(null);
 
   const filteredTrends = useMemo(() => {
     let result = mockTrends.filter(item => {
@@ -72,8 +73,6 @@ const TrendsPage: React.FC = () => {
     };
   };
 
-  const report = generateReport();
-
   const getShareFilterText = () => {
     const filters = [];
     if (category !== 'all') filters.push(categoryMap[category]);
@@ -81,6 +80,38 @@ const TrendsPage: React.FC = () => {
     if (region !== '全部') filters.push(region);
     return filters.length > 0 ? filters.join(' · ') : '全部分类';
   };
+
+  const handleCopyShare = () => {
+    const shareText = `【娱乐趋势${tab === 'hot' ? '热门榜' : '上升榜'}】\n${getShareFilterText()}\n${filteredTrends.slice(0, 5).map((item, i) => `${i + 1}. ${item.title} (${(item.heat / 10000).toFixed(1)}万)`).join('\n')}\n数据更新于 ${new Date().toLocaleString()}`;
+    Taro.setClipboardData({
+      data: shareText,
+      success: () => {
+        Taro.showToast({ title: '已复制到剪贴板', icon: 'success' });
+        setShowShare(false);
+      }
+    });
+  };
+
+  const handleSaveImage = () => {
+    Taro.showToast({ title: '生成图片中...', icon: 'loading' });
+    
+    setTimeout(() => {
+      const shareData = {
+        title: '娱乐趋势榜',
+        subtitle: tab === 'hot' ? '热门榜' : '上升榜',
+        filter: getShareFilterText(),
+        items: filteredTrends.slice(0, 5),
+        time: new Date().toLocaleString()
+      };
+      
+      const query = encodeURIComponent(JSON.stringify(shareData));
+      Taro.navigateTo({
+        url: `/pages/share-image/index?data=${query}`
+      });
+    }, 500);
+  };
+
+  const report = generateReport();
 
   return (
     <ScrollView className={styles.page} scrollY>
@@ -202,7 +233,7 @@ const TrendsPage: React.FC = () => {
               <Text className={styles.modalTitle}>📤 分享榜单</Text>
             </View>
             
-            <View className={styles.sharePreview}>
+            <View className={styles.sharePreview} ref={shareRef as any}>
               <Text className={styles.shareTitle}>娱乐趋势榜</Text>
               <Text className={styles.shareSubtitle}>{tab === 'hot' ? '热门榜' : '上升榜'}</Text>
               <Text className={styles.shareFilter}>{getShareFilterText()}</Text>
@@ -219,25 +250,10 @@ const TrendsPage: React.FC = () => {
             </View>
 
             <View className={styles.shareButtons}>
-              <Button className={styles.shareBtn} onClick={() => {
-                const shareText = `【娱乐趋势${tab === 'hot' ? '热门榜' : '上升榜'}】\n${getShareFilterText()}\n${filteredTrends.slice(0, 5).map((item, i) => `${i + 1}. ${item.title} (${(item.heat / 10000).toFixed(1)}万)`).join('\n')}\n数据更新于 ${new Date().toLocaleString()}`;
-                Taro.setClipboardData({
-                  data: shareText,
-                  success: () => {
-                    Taro.showToast({ title: '已复制到剪贴板', icon: 'success' });
-                    setShowShare(false);
-                  }
-                });
-              }}>
+              <Button className={styles.shareBtn} onClick={handleCopyShare}>
                 <Text>📋 复制链接</Text>
               </Button>
-              <Button className={styles.shareBtn} onClick={() => {
-                Taro.showToast({ title: '生成图片中...', icon: 'loading' });
-                setTimeout(() => {
-                  Taro.showToast({ title: '图片已保存到相册', icon: 'success' });
-                  setShowShare(false);
-                }, 1500);
-              }}>
+              <Button className={styles.shareBtn} onClick={handleSaveImage}>
                 <Text>🖼️ 保存图片</Text>
               </Button>
             </View>

@@ -95,10 +95,27 @@
   color: $color-text-secondary;
 }
 
+.compareValues {
+  display: flex;
+  gap: $spacing-lg;
+}
+
+.compareValueWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .compareValue {
   font-size: $font-size-md;
   font-weight: $font-weight-medium;
   color: $color-text-primary;
+}
+
+.compareValueLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
 }
 
 .compareChart {
