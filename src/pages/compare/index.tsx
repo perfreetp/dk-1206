@@ -3,17 +3,23 @@ import { View, Text, ScrollView } from '@tarojs/components';
 import { mockTrends } from '@/data/mockData';
 import { CategoryType, categoryMap } from '@/types';
 import HeatChart from '@/components/HeatChart';
+import { useBlocked } from '@/hooks/useBlocked';
 import styles from './index.module.scss';
 
 const ComparePage: React.FC = () => {
   const [category, setCategory] = useState<CategoryType>('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const { blockedIds } = useBlocked();
 
   const categories: CategoryType[] = ['all', 'movie', 'drama', 'variety', 'artist', 'game'];
 
   const filteredItems = useMemo(() => {
-    return mockTrends.filter(item => category === 'all' || item.category === category);
-  }, [category]);
+    return mockTrends.filter(item => {
+      const categoryMatch = category === 'all' || item.category === category;
+      const notBlocked = !blockedIds.includes(item.id);
+      return categoryMatch && notBlocked;
+    });
+  }, [category, blockedIds]);
 
   const selectedItems = useMemo(() => {
     return mockTrends.filter(item => selectedIds.includes(item.id));
@@ -76,6 +82,9 @@ const ComparePage: React.FC = () => {
             </Text>
           ))}
         </View>
+        {filteredItems.length === 0 && (
+          <Text className={styles.emptyText}>当前分类下暂无可选话题</Text>
+        )}
       </View>
 
       {selectedItems.length >= 2 ? (

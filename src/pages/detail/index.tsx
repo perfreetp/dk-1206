@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, Button, Textarea } from '@tarojs/components';
 import Taro from '@tarojs/taro';
-import { getTrendDetail, mockTrends } from '@/data/mockData';
+import { getTrendDetail } from '@/data/mockData';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useAlerts } from '@/hooks/useAlerts';
+import { useBlocked } from '@/hooks/useBlocked';
 import HeatChart from '@/components/HeatChart';
 import styles from './index.module.scss';
-
-const BLOCKED_KEY = 'blocked_trends';
 
 const DetailPage: React.FC = () => {
   const [detail, setDetail] = useState<ReturnType<typeof getTrendDetail>>();
@@ -15,6 +14,7 @@ const DetailPage: React.FC = () => {
   const [showShare, setShowShare] = useState(false);
   const { addFavorite, isFavorite, removeFavorite } = useFavorites();
   const { addAlert } = useAlerts();
+  const { addBlocked } = useBlocked();
 
   useEffect(() => {
     const pages = Taro.getCurrentPages();
@@ -65,12 +65,7 @@ const DetailPage: React.FC = () => {
   const handleBlock = () => {
     if (!detail) return;
     
-    const saved = localStorage.getItem(BLOCKED_KEY);
-    const blockedIds = saved ? JSON.parse(saved) : [];
-    if (!blockedIds.includes(detail.id)) {
-      blockedIds.push(detail.id);
-      localStorage.setItem(BLOCKED_KEY, JSON.stringify(blockedIds));
-    }
+    addBlocked(detail.id);
     
     Taro.showToast({ 
       title: '已屏蔽该话题', 
@@ -79,7 +74,9 @@ const DetailPage: React.FC = () => {
     });
     
     setTimeout(() => {
-      Taro.navigateBack();
+      Taro.navigateBack({
+        delta: 1
+      });
     }, 1500);
   };
 
@@ -237,15 +234,21 @@ const DetailPage: React.FC = () => {
 
             <View className={styles.shareButtons}>
               <Button className={styles.shareBtn} onClick={() => {
-                Taro.showToast({ title: '已复制链接', icon: 'success' });
-                setShowShare(false);
+                const shareText = `${detail.title}\n#${detail.tags.join(' #')}\n热度: ${formatHeat(detail.heat)}\n讨论量: ${formatHeat(detail.discussions)}`;
+                Taro.setClipboardData({
+                  data: shareText,
+                  success: () => {
+                    Taro.showToast({ title: '已复制链接', icon: 'success' });
+                    setShowShare(false);
+                  }
+                });
               }}>
                 <Text>📋 复制链接</Text>
               </Button>
               <Button className={styles.shareBtn} onClick={() => {
                 Taro.showToast({ title: '生成图片中...', icon: 'loading' });
                 setTimeout(() => {
-                  Taro.showToast({ title: '图片已保存', icon: 'success' });
+                  Taro.showToast({ title: '图片已保存到相册', icon: 'success' });
                   setShowShare(false);
                 }, 1500);
               }}>

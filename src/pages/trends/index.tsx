@@ -2,12 +2,11 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, Button } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { mockTrends } from '@/data/mockData';
-import { CategoryType } from '@/types';
+import { CategoryType, categoryMap } from '@/types';
 import TrendCard from '@/components/TrendCard';
 import FilterBar from '@/components/FilterBar';
+import { useBlocked } from '@/hooks/useBlocked';
 import styles from './index.module.scss';
-
-const BLOCKED_KEY = 'blocked_trends';
 
 const TrendsPage: React.FC = () => {
   const [category, setCategory] = useState<CategoryType>('all');
@@ -16,14 +15,7 @@ const TrendsPage: React.FC = () => {
   const [tab, setTab] = useState<'hot' | 'rising'>('hot');
   const [showReport, setShowReport] = useState(false);
   const [showShare, setShowShare] = useState(false);
-  const [blockedIds, setBlockedIds] = useState<string[]>([]);
-
-  React.useEffect(() => {
-    const saved = localStorage.getItem(BLOCKED_KEY);
-    if (saved) {
-      setBlockedIds(JSON.parse(saved));
-    }
-  }, []);
+  const { blockedIds, addBlocked } = useBlocked();
 
   const filteredTrends = useMemo(() => {
     let result = mockTrends.filter(item => {
@@ -61,9 +53,7 @@ const TrendsPage: React.FC = () => {
   };
 
   const handleBlock = (id: string) => {
-    const updated = [...blockedIds, id];
-    setBlockedIds(updated);
-    localStorage.setItem(BLOCKED_KEY, JSON.stringify(updated));
+    addBlocked(id);
     Taro.showToast({
       title: '已屏蔽该话题',
       icon: 'success'
@@ -71,8 +61,8 @@ const TrendsPage: React.FC = () => {
   };
 
   const generateReport = () => {
-    const hotList = [...mockTrends].sort((a, b) => b.heat - a.heat).slice(0, 5);
-    const risingList = [...mockTrends].sort((a, b) => b.heatChangePercent - a.heatChangePercent).slice(0, 3);
+    const hotList = [...mockTrends].filter(item => !blockedIds.includes(item.id)).sort((a, b) => b.heat - a.heat).slice(0, 5);
+    const risingList = [...mockTrends].filter(item => !blockedIds.includes(item.id)).sort((a, b) => b.heatChangePercent - a.heatChangePercent).slice(0, 3);
     
     return {
       date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
@@ -83,6 +73,14 @@ const TrendsPage: React.FC = () => {
   };
 
   const report = generateReport();
+
+  const getShareFilterText = () => {
+    const filters = [];
+    if (category !== 'all') filters.push(categoryMap[category]);
+    if (platform !== '全部') filters.push(platform);
+    if (region !== '全部') filters.push(region);
+    return filters.length > 0 ? filters.join(' · ') : '全部分类';
+  };
 
   return (
     <ScrollView className={styles.page} scrollY>
@@ -207,11 +205,13 @@ const TrendsPage: React.FC = () => {
             <View className={styles.sharePreview}>
               <Text className={styles.shareTitle}>娱乐趋势榜</Text>
               <Text className={styles.shareSubtitle}>{tab === 'hot' ? '热门榜' : '上升榜'}</Text>
+              <Text className={styles.shareFilter}>{getShareFilterText()}</Text>
               <View className={styles.shareList}>
                 {filteredTrends.slice(0, 5).map((item, index) => (
                   <View key={item.id} className={styles.shareItem}>
-                    <Text className={styles.shareRank}>{index + 1}</Text>
+                    <Text className={`${styles.shareRank} ${index < 3 ? styles.topRank : ''}`}>{index + 1}</Text>
                     <Text className={styles.shareItemTitle}>{item.title}</Text>
+                    <Text className={styles.shareItemValue}>{(item.heat / 10000).toFixed(1)}万</Text>
                   </View>
                 ))}
               </View>
@@ -220,15 +220,21 @@ const TrendsPage: React.FC = () => {
 
             <View className={styles.shareButtons}>
               <Button className={styles.shareBtn} onClick={() => {
-                Taro.showToast({ title: '已复制到剪贴板', icon: 'success' });
-                setShowShare(false);
+                const shareText = `【娱乐趋势${tab === 'hot' ? '热门榜' : '上升榜'}】\n${getShareFilterText()}\n${filteredTrends.slice(0, 5).map((item, i) => `${i + 1}. ${item.title} (${(item.heat / 10000).toFixed(1)}万)`).join('\n')}\n数据更新于 ${new Date().toLocaleString()}`;
+                Taro.setClipboardData({
+                  data: shareText,
+                  success: () => {
+                    Taro.showToast({ title: '已复制到剪贴板', icon: 'success' });
+                    setShowShare(false);
+                  }
+                });
               }}>
                 <Text>📋 复制链接</Text>
               </Button>
               <Button className={styles.shareBtn} onClick={() => {
                 Taro.showToast({ title: '生成图片中...', icon: 'loading' });
                 setTimeout(() => {
-                  Taro.showToast({ title: '图片已保存', icon: 'success' });
+                  Taro.showToast({ title: '图片已保存到相册', icon: 'success' });
                   setShowShare(false);
                 }, 1500);
               }}>

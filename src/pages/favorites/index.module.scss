@@ -126,3 +126,85 @@
   font-size: $font-size-md;
   color: $color-text-tertiary;
 }
+
+.blockedSection {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-top: $spacing-lg;
+}
+
+.blockedHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.blockedTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.clearBtn {
+  padding: $spacing-xs $spacing-md;
+  background: rgba($color-error, 0.1);
+  border-radius: $radius-button;
+}
+
+.clearBtnText {
+  font-size: $font-size-xs;
+  color: $color-error;
+}
+
+.blockedList {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height $transition-base;
+  
+  &.expanded {
+    max-height: 600rpx;
+  }
+}
+
+.blockedItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.blockedItemTitle {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.restoreBtn {
+  padding: $spacing-xs $spacing-md;
+  background: rgba($color-primary, 0.1);
+  border-radius: $radius-button;
+}
+
+.restoreBtnText {
+  font-size: $font-size-xs;
+  color: $color-primary;
+}
+
+.toggleBtn {
+  width: 100%;
+  padding: $spacing-md;
+  margin-top: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+}
+
+.toggleBtnText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}

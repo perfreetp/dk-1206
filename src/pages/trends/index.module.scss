@@ -256,6 +256,13 @@
   display: block;
 }
 
+.shareFilter {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: $spacing-xs;
+  display: block;
+}
+
 .shareList {
   background: rgba(255, 255, 255, 0.1);
   border-radius: $radius-sm;
@@ -284,11 +291,23 @@
   font-size: $font-size-xs;
   color: $color-text-white;
   margin-right: $spacing-md;
+  
+  &.topRank {
+    background: $color-text-white;
+    color: $color-primary;
+    font-weight: $font-weight-bold;
+  }
 }
 
 .shareItemTitle {
+  flex: 1;
   font-size: $font-size-md;
   color: $color-text-white;
+}
+
+.shareItemValue {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .shareFooter {
